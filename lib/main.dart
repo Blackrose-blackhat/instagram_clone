@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/Layouts/responsive_layout.dart';
+import 'package:instagram_clone/screens/LoginScreen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 
 void main() async {
@@ -17,7 +18,6 @@ void main() async {
     );
   }
   await Firebase.initializeApp();
-
   runApp(const MyApp());
 }
 
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: mobileBackgroundColor,
       ),
-      home: ResponsiveLayout(),
+      home: LoginScreen(),
     );
   }
 }

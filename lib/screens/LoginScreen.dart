@@ -35,6 +35,10 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Flexible(
+                  child: Container(),
+                  flex: 2,
+                ),
                 SvgPicture.asset(
                   'assets/images/ic_instagram.svg',
                   color: primaryColor,
@@ -57,6 +61,44 @@ class _LoginScreenState extends State<LoginScreen> {
                   hintText: 'Enter your Password',
                   textInputType: TextInputType.visiblePassword,
                   isPass: true,
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                Container(
+                  child: const Text('Log in'),
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(18),
+                  decoration: const ShapeDecoration(
+                    color: blueColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(4),
+                      ),
+                    ),
+                  ),
+                ),
+                Flexible(
+                  child: Container(),
+                  flex: 2,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text('Not having an account?'),
+                    ),
+                    Container(
+                      child: Text(
+                        'Signup',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    )
+                  ],
                 )
               ],
             ),

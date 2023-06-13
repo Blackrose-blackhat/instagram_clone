@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/utils/utils.dart';
 
 import '../resources/authMethods.dart';
 import '../widgets/TextFieldInput.dart';
@@ -20,6 +24,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _repasswordController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
+  Uint8List? _image;
+  bool _isLoading = false;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -29,6 +35,40 @@ class _SignupScreenState extends State<SignupScreen> {
     _usernameController.dispose();
     _repasswordController.dispose();
     _bioController.dispose();
+  }
+
+  void selectImage() async {
+    Uint8List? im = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = im;
+    });
+  }
+
+  void signUpUser() async {
+    // set loading to true
+    setState(() {
+      _isLoading = true;
+    });
+
+    // signup user using our authmethodds
+    String res = await AuthMethods().signupUser(
+        email: _emailController.text,
+        password: _passwordController.text,
+        username: _usernameController.text,
+        bio: _bioController.text,
+        file: _image!);
+    // if string returned is sucess, user has been created
+    if (res == "success") {
+      setState(() {
+        _isLoading = false;
+      });
+      // navigate to the home screen
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      // show the error
+    }
   }
 
   @override
@@ -59,16 +99,24 @@ class _SignupScreenState extends State<SignupScreen> {
                         height: 34,
                       ),
                       Stack(
-                        children: const [
-                          CircleAvatar(
-                            radius: 54,
-                            backgroundImage: NetworkImage(
-                                'https://media.gq-magazin.de/photos/6436692ac3298d37c8b0ca2f/16:9/w_1280,c_limit/entertainment-film-ghosted-armas.jpg'),
-                          ),
+                        children: [
+                          _image != null
+                              ? CircleAvatar(
+                                  radius: 54,
+                                  backgroundImage: MemoryImage(_image!),
+                                )
+                              : const CircleAvatar(
+                                  radius: 54,
+                                  backgroundImage: NetworkImage(
+                                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRA6g9BWr61gs6KYIq3zjFEy36Z8OuOIJQ75A&usqp=CAU'),
+                                ),
                           Positioned(
-                            bottom: -2,
-                            left: 80,
-                            child: Icon(Icons.add_a_photo_outlined),
+                            bottom: -3,
+                            left: 72,
+                            child: IconButton(
+                              onPressed: selectImage,
+                              icon: const Icon(Icons.add_a_photo_outlined),
+                            ),
                           )
                         ],
                       ),
@@ -121,28 +169,25 @@ class _SignupScreenState extends State<SignupScreen> {
                         height: 24,
                       ),
                       InkWell(
-                        onTap: () async {
-                          String res = await AuthMethods().signupUser(
-                              email: _emailController.text,
-                              password: _passwordController.text,
-                              username: _usernameController.text,
-                              bio: _bioController.text);
-                          print(res);
-                        },
-                        child: Container(
-                          child: const Text('Sign up'),
-                          width: double.infinity,
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(18),
-                          decoration: const ShapeDecoration(
-                            color: blueColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(4),
+                        onTap: signUpUser,
+                        child: _isLoading
+                            ? Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : Container(
+                                child: const Text('Sign up'),
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                padding: const EdgeInsets.all(18),
+                                decoration: const ShapeDecoration(
+                                  color: blueColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(4),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
                       ),
                       Flexible(
                         child: Container(),
@@ -152,14 +197,16 @@ class _SignupScreenState extends State<SignupScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: Text('Already have an account?'),
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: const Text('Already have an account?'),
                           ),
-                          Container(
-                            child: Text(
-                              'Login',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
+                          InkWell(
+                            child: Container(
+                              child: const Text(
+                                'Login',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           )
